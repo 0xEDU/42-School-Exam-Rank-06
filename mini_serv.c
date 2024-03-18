@@ -31,7 +31,6 @@ int main(int argc, char **argv)
     fd_set active_sockets, ready_sockets;
     char buffer[BUFFER_SIZE];
     char msg_buffer[BUFFER_SIZE];
-    char sub_buffer[BUFFER_SIZE];
     int server_socket;
 
     if ((server_socket = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
@@ -108,21 +107,13 @@ int main(int argc, char **argv)
                     close(socket_id);
                     FD_CLR(socket_id, &active_sockets);
                 } else {
-                    for (int i = 0, j = strlen(sub_buffer); i < bytes_read; i++, j++) {
-                        sub_buffer[j] = buffer[i];
-                        if (sub_buffer[j] == '\n') {
-                            sub_buffer[j] = '\0';
-                            bzero(msg_buffer, BUFFER_SIZE);
-                            sprintf(msg_buffer, "client %d: %s\n", clients[socket_id].id, sub_buffer);
-                            for (int i = 0; i < MAX_CLIENTS; i++) 
-                            {
-                                if (clients[i].fd != socket_id && clients[i].fd != 0) 
-                                {
-                                    send(clients[i].fd, msg_buffer, strlen(msg_buffer), 0);
-                                }
-                            }
-                            bzero(sub_buffer, strlen(sub_buffer));
-                            j = -1;
+                    bzero(msg_buffer, BUFFER_SIZE);
+                    sprintf(msg_buffer, "client %d: %s\n", clients[socket_id].id, buffer);
+                    for (int i = 0; i < MAX_CLIENTS; i++) 
+                    {
+                        if (clients[i].fd != socket_id) 
+                        {
+                            send(clients[i].fd, msg_buffer, strlen(msg_buffer), 0);
                         }
                     }
                 }
