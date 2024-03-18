@@ -2,7 +2,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/socket.h>
-#include <sys/select.h>
 #include <stdio.h>
 #include <netinet/in.h>
 
